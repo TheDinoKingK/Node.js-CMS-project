@@ -1,101 +1,34 @@
 const mongoose = require('mongoose');
 
-const URLSlugs = require('mongoose-url-slugs');
-
-
-const Schema  = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 
 const PostSchema = new Schema({
 
-
-   user: {
-
-       type: Schema.Types.ObjectId,
-       ref:'users'
-
-   },
-
-
-
-    category: {
-
-        type: Schema.Types.ObjectId,
-        ref: 'categories'
-
-    },
-
-
-    title:{
-
+    title: {
         type: String,
         required: true
-
     },
 
-    slug: {
-
-        type: String
-
-
-    },
-
-
-    status:{
-
+    status: {
         type: String,
         default: 'public'
-
     },
 
-
-    allowComments:{
-
+    allowComments: {
         type: Boolean,
-        require: true
-
+        required: true
     },
 
-
-    body:{
-
+    body: {
         type: String,
-        require: true
-
+        required: true
     },
 
-
-    file:{
-
+    file: {
         type: String,
+    }
 
+});
 
-    },
-
-    date: {
-
-        type: Date,
-        default: Date.now()
-
-    },
-
-
-
-    comments: [{
-
-        type: Schema.Types.ObjectId,
-        ref: 'comments'
-
-
-    }]
-
-
-
-
-
-
-}, {usePushEach: true});
-
-PostSchema.plugin(URLSlugs('title', {field: 'slug'}));
-
-module.exports = mongoose.model('posts', PostSchema);
+module.exports = mongoose.model('Post', PostSchema);

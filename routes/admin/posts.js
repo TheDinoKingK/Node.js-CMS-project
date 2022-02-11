@@ -1,282 +1,90 @@
 const express = require('express');
 const router = express.Router();
 const Post = require('../../models/Post');
-const Category = require('../../models/Category');
-const { isEmpty, uploadDir } = require('../../helpers/upload-helper');
-const fs = require('fs');
-const {userAuthenticated} = require('../../helpers/authentication');
-const Comment = require('../../models/Comment');
+const {isEmpty} = require('../../helpers/upload-helper');
 
 
-router.all('/*', userAuthenticated, (req, res, next)=>{
-
-
+router.all('/*', (req, res, next) => {
     req.app.locals.layout = 'admin';
     next();
-
-
 });
 
+router.get('/', (req, res) => {
 
-
-router.get('/', (req, res)=>{
-
-    Post.find({})
-        .populate('category')
-        .then(posts=>{
+    Post.find({}).lean().then(posts => {
 
         res.render('admin/posts', {posts: posts});
     });
 
 });
 
-router.get('/my-posts', (req, res)=>{
 
-
-    Post.find({user: req.user.id})
-        .populate('category')
-        .then(posts=>{
-
-            res.render('admin/posts/my-posts', {posts: posts});
-        });
-
-
-
+router.get('/create', (req, res) => {
+    res.render('admin/posts/create');
 });
 
+router.post('/create', (req, res) => {
 
+    let fileName = 'unknown';
 
-
-
-
-
-
-
-router.get('/create', (req, res)=>{
-
-    Category.find({}).then(categories=>{
-
-        res.render('admin/posts/create', {categories: categories});
-
-    });
-
-
-});
-
-
-
-
-
-router.post('/create', (req, res)=>{
-
-    let errors = [];
-
-
-    if(!req.body.title) {
-
-        errors.push({message: 'please add a title'});
-
-    }
-
-
-    if(!req.body.body) {
-
-        errors.push({message: 'please add a description'});
-
-    }
-
-
-    if(errors.length > 0){
-
-        res.render('admin/posts/create', {
-
-            errors: errors
-
-        })
-
-    } else {
-
-
-     let filename = 'BMW-Z4.jpg';
-
-
-     if(!isEmpty(req.files)){
-
+    if (!isEmpty(req.files)) {
         let file = req.files.file;
-        filename = Date.now() + '-' + file.name;
+        fileName = file.name;
+        let imgDir = './public/uploads/';
 
-        file.mv('./public/uploads/' + filename, (err)=>{
-
-            if(err) throw err;
-
+        file.mv(imgDir + fileName, (err) => {
+            if (err) throw err;
         });
-
-
     }
 
     let allowComments = true;
 
-    if(req.body.allowComments){
-
-        allowComments = true;
-
-    } else{
-
-        allowComments = false;
-
-    }
-
+    allowComments = !!req.body.allowComments;
 
     const newPost = new Post({
-
-
-        user: req.user.id,
         title: req.body.title,
         status: req.body.status,
-        allowComments: allowComments,
+        allowComments: allowComments, // req.body.allowComments ? "on" : "off",
         body: req.body.body,
-        category: req.body.category,
-        file: filename
-
+        file: fileName
     });
 
-    newPost.save().then(savedPost =>{
-
-
+    newPost.save().then(savedPost => {
         res.redirect('/admin/posts');
-
-
     });
-
-
-
-
-
-
-
-
-
-    }
-
 
     // console.log(req.body.allowComments);
 
-
+    // res.send("It worked!");
 });
 
+router.get('/edit/:id', (req, res) => {
 
-router.get('/edit/:id', (req, res)=>{
-
-    Post.findOne({_id: req.params.id})
-        .then(post=>{
-
-            Category.find({}).then(categories=>{
-
-                res.render('admin/posts/edit', {post: post, categories: categories});
-
-            });
-
-
+    Post.findOne({_id: req.params.id}).lean().then(post => {
+        res.render('admin/posts/edit', {post: post});
     });
-
-
 });
 
+router.put('/edit/:id', (req, res) => {
 
+    Post.findOne({_id: req.params.id}).then(post => {
+        allowComments = !!req.body.allowComments;
 
-// POST UPDATING
+        post.title = req.body.title;
+        post.status = req.body.status;
+        post.allowComments = allowComments;
+        post.body = req.body.body;
 
-
-
-router.put('/edit/:id', (req, res)=>{
-
-    Post.findOne({_id: req.params.id})
-
-        .then(post=>{
-            if(req.body.allowComments){
-                allowComments = true;
-            } else{
-                allowComments = false;
-            }
-
-            post.user = req.user.id;
-            post.title = req.body.title;
-            post.status = req.body.status;
-            post.allowComments = allowComments;
-            post.body = req.body.body;
-            post.category = req.body.category;
-
-
-
-
-            if(!isEmpty(req.files)){
-
-                let file = req.files.file;
-                filename = Date.now() + '-' + file.name;
-                post.file = filename;
-
-                file.mv('./public/uploads/' + filename, (err)=>{
-
-                    if(err) throw err;
-
-                });
-
-            }
-
-
-            post.save().then(updatedPost=>{
-
-
-
-                req.flash('success_message', 'Post was successfully updated');
-
-
-
-                res.redirect('/admin/posts/my-posts');
-            });
-
+        post.save().then(updatedPost => {
+            res.redirect('/admin/posts');
         });
-
-
+    });
 });
 
-
-router.delete('/:id', (req, res)=>{
-
-    Post.findOne({_id: req.params.id})
-        .populate('comments')
-        .then(post =>{
-
-            fs.unlink(uploadDir + post.file, (err)=>{
-
-
-                if(!post.comments.length < 1){
-
-                      post.comments.forEach(comment=>{
-
-                      comment.remove();
-
-                   });
-
-                }
-
-                post.remove().then(postRemoved=>{
-
-
-
-                    req.flash('success_message', 'Post was successfully deleted');
-                    res.redirect('/admin/posts/my-posts');
-
-
-                });
-
-
-            });
-
-     });
+router.delete('/:id', (req, res) => {
+    Post.deleteOne({_id: req.params.id}).then(result => {
+        res.redirect('/admin/posts');
+    });
 });
-
-
-
 
 module.exports = router;
