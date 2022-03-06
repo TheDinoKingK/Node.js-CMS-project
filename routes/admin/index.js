@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const {faker} = require('@faker-js/faker');
 const Post = require('../../models/Post');
+const {userAuthenticated} = require('../../helpers/authentication');
 
-router.all('/*', (req, res, next) => {
+router.all('/*', userAuthenticated, (req, res, next) => {
     req.app.locals.layout = 'admin';
     next();
 });
@@ -20,6 +21,7 @@ router.post('/generate-fake-posts', (req, res) => {
         post.status = 'public';
         post.allowComments = faker.datatype.boolean();
         post.body = faker.lorem.paragraphs();
+        post.file = faker.image.image();
 
         post.save().then(savedPost => {
         });

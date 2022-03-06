@@ -1,10 +1,27 @@
 <h1>Edit Post</h1>
 
-<form method="post" action="/admin/posts/edit/{{post._id}}?_method=PUT">
+<form method="post" action="/admin/posts/edit/{{post._id}}?_method=PUT" enctype="multipart/form-data">
 
     <div class="form-group">
         <label for="title">Title</label>
         <input name="title" type="text" class="form-control" id="title" value="{{post.title}}">
+    </div>
+
+    <div class="form-group">
+        <label for="file">File</label>
+        <input type="file" name="file" class="form-control-file">
+    </div>
+
+    <div class="form-group">
+        <label for="title">Category</label>
+
+        <select name="category" id="category" class="form-control">
+            {{#select post.category}}
+                {{#each categories}}
+                    <option value="{{_id}}">{{name}}</option>
+                {{/each}}
+            {{/select}}
+        </select>
     </div>
 
     <div class="form-group">
@@ -32,7 +49,6 @@
         <textarea name="body" cols="30" rows="10" type="text" class="form-control" id="body">{{post.body}}</textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
-
+    <button type="submit" class="btn btn-primary">Updates</button>
 
 </form>

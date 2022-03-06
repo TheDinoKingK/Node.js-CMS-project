@@ -4,18 +4,26 @@
     <thead>
     <tr>
         <th>ID</th>
+        <th>Thumbnail</th>
         <th>Title</th>
         <th>Status</th>
-        <th>Comments</th>
+        <th>Category</th>
+        <th>Allows Comments</th>
+        <th>Date Created</th>
     </tr>
     </thead>
     <tbody>
     {{#each posts}}
         <tr>
             <td>{{_id}}</td>
+            <td class="table-image w-25">
+                <img src="/uploads/{{file}}" class="img-fluid" alt="Article's thumbnail">
+            </td>
             <td>{{title}}</td>
             <td>{{status}}</td>
+            <td>{{category.name}}</td>
             <td>{{allowComments}}</td>
+            <td>{{generateTime date 'MMMM Do YYYY'}}</td>
             <td><a href="/admin/posts/edit/{{_id}}" class="btn btn-info">Edit</a></td>
             <td>
                 <form action="/admin/posts/{{_id}}?_method=DELETE" method="post">

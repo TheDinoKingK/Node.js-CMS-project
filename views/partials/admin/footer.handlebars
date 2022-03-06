@@ -1,4 +1,4 @@
-<footer class="sticky-footer">
+<footer class="sticky-footer navbar-fixed-bottom">
     <div class="container">
         <div class="text-center">
             <small>Copyright © Your Website 2017</small>
@@ -93,11 +93,9 @@
 
     $("[name='approveComment']").bootstrapSwitch();
 
-
     $(document).ready(()=>{
 
-
-        $("[name='approveComment']").on('switchChange.bootstrapSwitch', function(e, data){
+        $("[name='approveComment']").on('switchChange.bootstrapSwitch', function (e, data) {
 
             const id = $(this).attr('data-id');
 
@@ -107,24 +105,13 @@
                 url: '/admin/comments/approve-comment',
                 data: {id: id, approveComment: data},
                 cache: false,
-                success: function(data){
+                success: function (data) {
 
-                       toastr.success(`Comment with id ${data._id} was updated`);
+                    toastr.success(`Comment with id ${data._id} was updated`);
 
                 }
-
-
             });
-
-
-
-
-
         });
-
-
-
-
     });
 
 </script>

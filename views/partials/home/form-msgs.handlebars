@@ -1,39 +1,29 @@
-{{#if error}}
-
-    <div class="alert alert-danger">
-
-        {{error}}
-
+{{#if success_message}}
+    <div class="alert alert-success">
+        {{success_message}} <!-- genrcsucss -->
     </div>
-
-
 {{/if}}
 
+{{#if edit_message}}
+    <div class="alert alert-warning">
+        {{edit_message}} <!-- editwrn -->
+    </div>
+{{/if}}
 
-
+{{#if delete_message}}
+    <div class="alert alert-success">
+        {{delete_message}} <!-- deltesucss -->
+    </div>
+{{/if}}
 
 {{#if error_message}}
-
     <div class="alert alert-danger">
-
-        {{error_message}}
-
+        {{error_message}} <!-- ermsg -->
     </div>
-
-
 {{/if}}
 
-
-
-
-{{#if success_message}}
-
-    <div class="alert alert-success">
-
-        {{success_message}}
-
+{{#if error}}
+    <div class="alert alert-danger">
+        {{error}} <!-- err -->
     </div>
-
-
 {{/if}}
-

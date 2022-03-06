@@ -27,8 +27,22 @@ const PostSchema = new Schema({
 
     file: {
         type: String,
-    }
+    },
 
+    date: {
+        type: Date,
+        default: Date.now()
+    },
+
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'categories'
+    },
+
+    // comments: [{
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'comments'
+    // }]
 });
 
-module.exports = mongoose.model('Post', PostSchema);
+module.exports = mongoose.model('post', PostSchema);

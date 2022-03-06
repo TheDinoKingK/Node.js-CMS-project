@@ -11,10 +11,13 @@
     <title>Blog Home - Start Bootstrap Template</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
-    <link href="css/blog-home.css" rel="stylesheet">
+    <!-- Custom styles for the home page -->
+    <link href="/css/blog-home.css" rel="stylesheet">
+
+    <!-- Custom styles for the single post view -->
+    <link href="/css/blog-post.css" rel="stylesheet">
 
 </head>
 
@@ -26,6 +29,18 @@
 <!-- Page Content -->
 <div class="container">
 
+    {{#if errors}}
+
+        {{#each errors}}
+            <div class="alert alert-danger">
+                {{message}}
+            </div>
+        {{/each}}
+
+    {{/if}}
+
+    {{> home/form-msgs}}
+
     {{{body}}}
 
 </div>
@@ -35,8 +50,8 @@
 {{> home/footer}}
 
 <!-- Bootstrap core JavaScript -->
-<script src="css/jquery.min.js"></script>
-<script src="css/bootstrap.bundle.min.js"></script>
+<script src="/css/jquery.min.js"></script>
+<script src="/css/bootstrap.bundle.min.js"></script>
 
 </body>
 
